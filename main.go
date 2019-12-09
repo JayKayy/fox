@@ -235,7 +235,7 @@ func expand(exp Expansion, kb keybd_event.KeyBonding) {
 		if err != nil {
 			panic(err)
 		}
-		time.Sleep(6 * time.Millisecond)
+		time.Sleep(8 * time.Millisecond)
 		kb.Clear()
 
 	}
