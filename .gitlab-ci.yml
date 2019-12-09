@@ -1,0 +1,10 @@
+image: "golang:1.13"
+
+before_script:
+  - apt-get update 
+
+stages:
+    - test
+    - build
+
+
