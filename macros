@@ -1,0 +1,14 @@
+[
+        {
+		"abbrev": ";;,",
+		"expanded": "Hi there!"
+	},
+	{
+		"abbrev": ";;.",
+		"expanded": "Hello World!"
+	},
+	{
+		"abbrev": ";;/",
+		"expanded": "Golang"
+	}
+]

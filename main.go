@@ -6,7 +6,10 @@ import (
 	"github.com/micmonay/keybd_event"
 	"github.com/sirupsen/logrus"
 	//	"strconv"
+	"encoding/json"
+	"flag"
 	"golang.org/x/text/unicode/rangetable"
+	"os"
 	"runtime"
 	"strings"
 	"time"
@@ -108,35 +111,43 @@ var keys = map[rune]int{
 
 func main() {
 
-	// Prep for send keys
+	var config string
+	var device string
+	var verbose bool
+
+	flag.StringVar(&config, "c", fmt.Sprintf("%s/.macros", os.Getenv("HOME")), "Config file to use for macros.")
+	flag.StringVar(&device, "d", "", "Input device to listen to. ls -al /dev/input/by-id")
+	flag.BoolVar(&verbose, "v", false, "Enable verbose mode.")
+	flag.Parse()
+
+	logrus.Println("Initializing...")
+
+	if verbose {
+		logrus.Println("Using config file: ", config)
+	}
 
 	kb, err := keybd_event.NewKeyBonding()
-	if err != nil {
-		panic(err)
-	}
+	check(err)
+
 	// For linux, it is very important wait 2 seconds
 	if runtime.GOOS == "linux" {
 		time.Sleep(2 * time.Second)
 	}
 
-	// find keyboard device, does not require a root permission
-	keyboard := keylogger.FindKeyboardDevice()
-	// check if we found a path to keyboard
-	if len(keyboard) <= 0 {
-		logrus.Error("No keyboard found...you will need to provide manual input path")
-		return
+	if device == "" {
+		device = keylogger.FindKeyboardDevice()
+		if len(device) < 1 {
+			logrus.Error("No keyboard found...you will need to provide manual input path")
+			return
+		}
+		if verbose {
+			logrus.Println("Found a keyboard at", device)
+		}
 	}
 
-	logrus.Println("Found a keyboard at", keyboard)
 	// init keylogger with keyboard
-	// trying for logitech keyboard
-	// Otherwise it only picks up laptop keyboard
-	k, err := keylogger.New(keyboard)
-	//k, err := keylogger.New("/dev/input/event19")
-	if err != nil {
-		logrus.Error(err)
-		return
-	}
+	k, err := keylogger.New(device)
+	check(err)
 	defer k.Close()
 
 	events := k.Read()
@@ -146,7 +157,17 @@ func main() {
 	// TODO load them in from filesystem
 	// arbitrarily set limit to 255
 	var expansions []Expansion = make([]Expansion, 0, 255)
+	file, err := os.OpenFile(config, os.O_CREATE, 0666)
+	check(err)
+	defer file.Close()
 
+	var bytes []byte = make([]byte, 1000, 5000)
+	read, err := file.Read(bytes)
+	check(err)
+	err = json.Unmarshal(bytes[:read], &expansions)
+	check(err)
+	fmt.Println(expansions)
+	//TODO read in JSON here
 	// Set static expansions
 	expansions = append(expansions, Expansion{";;,", "Hi there!\n\nThanks for contacting DigitalOcean!"})
 	expansions = append(expansions, Expansion{";;.", "Hi there!\n\nThank you for your response!"})
@@ -213,9 +234,7 @@ func expand(exp Expansion, kb keybd_event.KeyBonding) {
 		kb.SetKeys(keybd_event.VK_BACKSPACE)
 		err := kb.Launching()
 		time.Sleep(14 * time.Millisecond)
-		if err != nil {
-			panic(err)
-		}
+		check(err)
 	}
 	kb.Clear()
 
@@ -232,9 +251,7 @@ func expand(exp Expansion, kb keybd_event.KeyBonding) {
 		}
 		kb.SetKeys(keys[char])
 		err := kb.Launching()
-		if err != nil {
-			panic(err)
-		}
+		check(err)
 		time.Sleep(8 * time.Millisecond)
 		kb.Clear()
 
@@ -250,4 +267,10 @@ func reset(current []string) []string {
 	temp := make([]string, 0, 50)
 	temp = append(temp, current[40:]...)
 	return temp
+}
+func check(e error) {
+	if e != nil {
+		logrus.Error(e)
+		panic(e)
+	}
 }
