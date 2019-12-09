@@ -17,8 +17,8 @@ import (
 )
 
 type Expansion struct {
-	abbrev   string
-	expanded string
+	Abbrev   string
+	Expanded string
 }
 
 // Maybe replaceable by https://godoc.org/golang.org/x/mobile/event/key ?
@@ -109,23 +109,24 @@ var keys = map[rune]int{
 	')':  keybd_event.VK_0,
 }
 
+var verbose bool
+
 func main() {
 
 	var config string
 	var device string
-	var verbose bool
 
 	flag.StringVar(&config, "c", fmt.Sprintf("%s/.macros", os.Getenv("HOME")), "Config file to use for macros.")
-	flag.StringVar(&device, "d", "", "Input device to listen to. ls -al /dev/input/by-id")
+	flag.StringVar(&device, "d", "", "Input device to listen to. For input devices use: ls -al /dev/input/by-id")
 	flag.BoolVar(&verbose, "v", false, "Enable verbose mode.")
 	flag.Parse()
 
-	logrus.Println("Initializing...")
-
 	if verbose {
+		logrus.Println("Initializing...")
 		logrus.Println("Using config file: ", config)
 	}
 
+	// TODO multi-keyboard
 	kb, err := keybd_event.NewKeyBonding()
 	check(err)
 
@@ -140,9 +141,10 @@ func main() {
 			logrus.Error("No keyboard found...you will need to provide manual input path")
 			return
 		}
-		if verbose {
-			logrus.Println("Found a keyboard at", device)
-		}
+	}
+
+	if verbose {
+		logrus.Println("Using keyboard at", device)
 	}
 
 	// init keylogger with keyboard
@@ -152,28 +154,26 @@ func main() {
 
 	events := k.Read()
 
-	// range of events
-	// specify abbreviations for expansion
-	// TODO load them in from filesystem
 	// arbitrarily set limit to 255
 	var expansions []Expansion = make([]Expansion, 0, 255)
 	file, err := os.OpenFile(config, os.O_CREATE, 0666)
 	check(err)
 	defer file.Close()
 
+	if verbose {
+		logrus.Println("Reading in config file ...")
+	}
 	var bytes []byte = make([]byte, 1000, 5000)
 	read, err := file.Read(bytes)
 	check(err)
 	err = json.Unmarshal(bytes[:read], &expansions)
 	check(err)
-	fmt.Println(expansions)
-	//TODO read in JSON here
-	// Set static expansions
-	expansions = append(expansions, Expansion{";;,", "Hi there!\n\nThanks for contacting DigitalOcean!"})
-	expansions = append(expansions, Expansion{";;.", "Hi there!\n\nThank you for your response!"})
-	expansions = append(expansions, Expansion{";;/", "Let me know if you have any further questions.\n\nRegards,\n\nJohn Kwiatkoski\nSenior Developer Support Engineer - Kubernetes"})
 
 	var pressed = make([]string, 0, 50)
+
+	if verbose {
+		logrus.Println("fox expander ready!")
+	}
 	for e := range events {
 
 		switch e.Type {
@@ -186,37 +186,31 @@ func main() {
 				if len(pressed) == cap(pressed) {
 					pressed = reset(pressed)
 				}
-				logrus.Println("[event] press key ", e.KeyString())
+
 				pressed = append(pressed, e.KeyString())
 				match, exp := checkExpand(pressed, expansions)
 				if match {
 					expand(exp, kb)
 					pressed = make([]string, 0, 50)
 				}
-				fmt.Println(pressed)
+				if verbose {
+					logrus.Println("[event] press key ", e.KeyString())
+					logrus.Println("Key Sequence ", pressed)
+				}
 
 			}
-
-			// if the state of key is released
-			// Dont think ill need releases
-			//	if e.KeyRelease() {
-			//		logrus.Println("[event] release key ", e.KeyString())
-			//	}
-
 			break
 		}
 	}
 }
 func checkExpand(pressed []string, expansions []Expansion) (bool, Expansion) {
 
-	// compact pressed to a single string
-	// check whether any abbrieviations (abbrevs)
-	// are in the keys that were pressed.
-	// If so return the abbrev
 	joined := strings.Join(pressed, "")
 	for _, exp := range expansions {
-		if strings.Contains(joined, exp.abbrev) {
-			fmt.Printf("Match found: %s!\n Expanding...\n", exp.abbrev)
+		if strings.Contains(joined, exp.Abbrev) {
+			if verbose {
+				fmt.Printf("Match found: %s!\n Expanding...\n", exp.Abbrev)
+			}
 			return true, exp
 		}
 	}
@@ -226,11 +220,8 @@ func checkExpand(pressed []string, expansions []Expansion) (bool, Expansion) {
 
 func expand(exp Expansion, kb keybd_event.KeyBonding) {
 
-	// Cant do all in one because of caps and shifts
-	// var keyed_msg = make([]int, 0, 4000)
-
-	// Insert a backspace for each rune in the abbreviation
-	for i := 0; i < len(exp.abbrev); i++ {
+	// Insert a backspace for each rune in the Abbreviation
+	for i := 0; i < len(exp.Abbrev); i++ {
 		kb.SetKeys(keybd_event.VK_BACKSPACE)
 		err := kb.Launching()
 		time.Sleep(14 * time.Millisecond)
@@ -238,7 +229,9 @@ func expand(exp Expansion, kb keybd_event.KeyBonding) {
 	}
 	kb.Clear()
 
-	for _, char := range exp.expanded {
+	// Sleeps are required as theres an apparent race condition.
+	// Keys launched first are not guaranteed to be typed first
+	for _, char := range exp.Expanded {
 		if unicode.IsLetter(char) {
 			if unicode.IsUpper(char) {
 				kb.HasSHIFT(true)
@@ -256,14 +249,13 @@ func expand(exp Expansion, kb keybd_event.KeyBonding) {
 		kb.Clear()
 
 	}
-	//launch
-	//Ouput : AB
 }
 func reset(current []string) []string {
 
-	// 40 is arbitrary here and may need to move if
-	// the slice is ever made bigger
-	fmt.Println("keys reset.")
+	// 50 is arbitrary here and may need to increase
+	if verbose {
+		fmt.Println("keys reset.")
+	}
 	temp := make([]string, 0, 50)
 	temp = append(temp, current[40:]...)
 	return temp

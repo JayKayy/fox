@@ -1,14 +1,15 @@
-[
-        {
-		"abbrev": ";;,",
-		"expanded": "Hi there!"
-	},
-	{
-		"abbrev": ";;.",
-		"expanded": "Hello World!"
-	},
-	{
-		"abbrev": ";;/",
-		"expanded": "Golang"
-	}
-]
+ [
+
+ 	{
+ 		"abbrev": ";;,",
+ 		"expanded": "Hi there!"
+ 	},
+ 	{
+ 		"abbrev": ";;.",
+ 		"expanded": "Hello\nWorld!\n"
+ 	},
+ 	{
+ 		"abbrev": ";;/",
+ 		"expanded": "golang"
+ 	}
+ ]
