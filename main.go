@@ -279,7 +279,6 @@ func reset(current []string) []string {
 }
 func check(e error) {
 	if e != nil {
-		logrus.Error(e)
-		panic(e)
+		logrus.Fatal(e)
 	}
 }

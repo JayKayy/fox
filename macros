@@ -5,11 +5,11 @@
  		"expanded": "Hi there!"
  	},
  	{
- 		"abbrev": ";;.",
+ 		"abbrev": "hw",
  		"expanded": "Hello\nWorld!\n"
  	},
  	{
- 		"abbrev": ";;/",
+ 		"abbrev": "gogo",
  		"expanded": "golang"
  	}
  ]
