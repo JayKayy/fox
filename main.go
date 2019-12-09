@@ -23,75 +23,75 @@ type Expansion struct {
 
 // Maybe replaceable by https://godoc.org/golang.org/x/mobile/event/key ?
 var keys = map[rune]int{
-	'a': keybd_event.VK_A,
-	'b': keybd_event.VK_B,
-	'c': keybd_event.VK_C,
-	'd': keybd_event.VK_D,
-	'e': keybd_event.VK_E,
-	'f': keybd_event.VK_F,
-	'g': keybd_event.VK_G,
-	'h': keybd_event.VK_H,
-	'i': keybd_event.VK_I,
-	'j': keybd_event.VK_J,
-	'k': keybd_event.VK_K,
-	'l': keybd_event.VK_L,
-	'm': keybd_event.VK_M,
-	'n': keybd_event.VK_N,
-	'o': keybd_event.VK_O,
-	'p': keybd_event.VK_P,
-	'q': keybd_event.VK_Q,
-	'r': keybd_event.VK_R,
-	's': keybd_event.VK_S,
-	't': keybd_event.VK_T,
-	'u': keybd_event.VK_U,
-	'v': keybd_event.VK_V,
-	'w': keybd_event.VK_W,
-	'x': keybd_event.VK_X,
-	'y': keybd_event.VK_Y,
-	'z': keybd_event.VK_Z,
-	'A': keybd_event.VK_A,
-	'B': keybd_event.VK_B,
-	'C': keybd_event.VK_C,
-	'D': keybd_event.VK_D,
-	'E': keybd_event.VK_E,
-	'F': keybd_event.VK_F,
-	'G': keybd_event.VK_G,
-	'H': keybd_event.VK_H,
-	'I': keybd_event.VK_I,
-	'J': keybd_event.VK_J,
-	'K': keybd_event.VK_K,
-	'L': keybd_event.VK_L,
-	'M': keybd_event.VK_M,
-	'N': keybd_event.VK_N,
-	'O': keybd_event.VK_O,
-	'P': keybd_event.VK_P,
-	'Q': keybd_event.VK_Q,
-	'R': keybd_event.VK_R,
-	'S': keybd_event.VK_S,
-	'T': keybd_event.VK_T,
-	'U': keybd_event.VK_U,
-	'V': keybd_event.VK_V,
-	'W': keybd_event.VK_W,
-	'X': keybd_event.VK_X,
-	'Y': keybd_event.VK_Y,
-	'Z': keybd_event.VK_Z,
-	'1': keybd_event.VK_1,
-	'2': keybd_event.VK_2,
-	'3': keybd_event.VK_3,
-	'4': keybd_event.VK_4,
-	'5': keybd_event.VK_5,
-	'6': keybd_event.VK_6,
-	'7': keybd_event.VK_7,
-	'8': keybd_event.VK_8,
-	'9': keybd_event.VK_9,
-	'0': keybd_event.VK_0,
-	'-': keybd_event.VK_SP2,
-	'=': keybd_event.VK_SP3,
-	'[': keybd_event.VK_SP4,
-	']': keybd_event.VK_SP5,
-	//	'\\' keybd_event.VK_SP8,
-	';': keybd_event.VK_SP6,
-	//	'\'':  keybd_event.VK_SP7,
+	'a':  keybd_event.VK_A,
+	'b':  keybd_event.VK_B,
+	'c':  keybd_event.VK_C,
+	'd':  keybd_event.VK_D,
+	'e':  keybd_event.VK_E,
+	'f':  keybd_event.VK_F,
+	'g':  keybd_event.VK_G,
+	'h':  keybd_event.VK_H,
+	'i':  keybd_event.VK_I,
+	'j':  keybd_event.VK_J,
+	'k':  keybd_event.VK_K,
+	'l':  keybd_event.VK_L,
+	'm':  keybd_event.VK_M,
+	'n':  keybd_event.VK_N,
+	'o':  keybd_event.VK_O,
+	'p':  keybd_event.VK_P,
+	'q':  keybd_event.VK_Q,
+	'r':  keybd_event.VK_R,
+	's':  keybd_event.VK_S,
+	't':  keybd_event.VK_T,
+	'u':  keybd_event.VK_U,
+	'v':  keybd_event.VK_V,
+	'w':  keybd_event.VK_W,
+	'x':  keybd_event.VK_X,
+	'y':  keybd_event.VK_Y,
+	'z':  keybd_event.VK_Z,
+	'A':  keybd_event.VK_A,
+	'B':  keybd_event.VK_B,
+	'C':  keybd_event.VK_C,
+	'D':  keybd_event.VK_D,
+	'E':  keybd_event.VK_E,
+	'F':  keybd_event.VK_F,
+	'G':  keybd_event.VK_G,
+	'H':  keybd_event.VK_H,
+	'I':  keybd_event.VK_I,
+	'J':  keybd_event.VK_J,
+	'K':  keybd_event.VK_K,
+	'L':  keybd_event.VK_L,
+	'M':  keybd_event.VK_M,
+	'N':  keybd_event.VK_N,
+	'O':  keybd_event.VK_O,
+	'P':  keybd_event.VK_P,
+	'Q':  keybd_event.VK_Q,
+	'R':  keybd_event.VK_R,
+	'S':  keybd_event.VK_S,
+	'T':  keybd_event.VK_T,
+	'U':  keybd_event.VK_U,
+	'V':  keybd_event.VK_V,
+	'W':  keybd_event.VK_W,
+	'X':  keybd_event.VK_X,
+	'Y':  keybd_event.VK_Y,
+	'Z':  keybd_event.VK_Z,
+	'1':  keybd_event.VK_1,
+	'2':  keybd_event.VK_2,
+	'3':  keybd_event.VK_3,
+	'4':  keybd_event.VK_4,
+	'5':  keybd_event.VK_5,
+	'6':  keybd_event.VK_6,
+	'7':  keybd_event.VK_7,
+	'8':  keybd_event.VK_8,
+	'9':  keybd_event.VK_9,
+	'0':  keybd_event.VK_0,
+	'-':  keybd_event.VK_SP2,
+	'=':  keybd_event.VK_SP3,
+	'[':  keybd_event.VK_SP4,
+	']':  keybd_event.VK_SP5,
+	'\\': keybd_event.VK_SP8,
+	';':  keybd_event.VK_SP6,
+	'\'': keybd_event.VK_SP7,
 	',':  keybd_event.VK_SP9,
 	'.':  keybd_event.VK_SP10,
 	'/':  keybd_event.VK_SP11,
@@ -169,11 +169,12 @@ func main() {
 	err = json.Unmarshal(bytes[:read], &expansions)
 	check(err)
 
+	if verbose {
+		logrus.Println("Loaded macros: ", expansions)
+	}
 	var pressed = make([]string, 0, 50)
 
-	if verbose {
-		logrus.Println("fox expander ready!")
-	}
+	logrus.Println("fox expander ready!")
 	for e := range events {
 
 		switch e.Type {
@@ -186,7 +187,6 @@ func main() {
 				if len(pressed) == cap(pressed) {
 					pressed = reset(pressed)
 				}
-
 				pressed = append(pressed, e.KeyString())
 				match, exp := checkExpand(pressed, expansions)
 				if match {
@@ -204,12 +204,18 @@ func main() {
 	}
 }
 func checkExpand(pressed []string, expansions []Expansion) (bool, Expansion) {
-
+	// All abbreviations are checked case insensitive
 	joined := strings.Join(pressed, "")
+	// If we get a lot of these I will break out into seperate function
+	joined = strings.ToLower(strings.Replace(joined, "SPACE", " ", -1))
+
+	if verbose {
+		logrus.Printf("Checking for matches in: '%s'", joined)
+	}
 	for _, exp := range expansions {
-		if strings.Contains(joined, exp.Abbrev) {
+		if strings.Contains(joined, strings.ToLower(exp.Abbrev)) {
 			if verbose {
-				fmt.Printf("Match found: %s!\n Expanding...\n", exp.Abbrev)
+				logrus.Printf("Match found: '%s'!\n Expanding...\n", exp.Abbrev)
 			}
 			return true, exp
 		}
@@ -233,28 +239,39 @@ func expand(exp Expansion, kb keybd_event.KeyBonding) {
 	// Keys launched first are not guaranteed to be typed first
 	for _, char := range exp.Expanded {
 		if unicode.IsLetter(char) {
+			if verbose {
+				logrus.Printf("Expanding char as letter '%c'...", char)
+			}
 			if unicode.IsUpper(char) {
 				kb.HasSHIFT(true)
 			}
-		}
-		if unicode.IsPunct(char) {
+		} else if unicode.IsPunct(char) {
+			if verbose {
+				logrus.Printf("Expanding char as punctuation '%c'...", char)
+			}
 			if unicode.In(char, rangetable.New('!', '@', '#', '$', '%', '^', '&', '*', '(', ')')) {
+				if verbose {
+					logrus.Printf("Activating shift for '%c'...", char)
+				}
 				kb.HasSHIFT(true)
+			}
+		} else {
+			if verbose {
+				logrus.Printf("Expanding char as non letter or punctuation '%c'...", char)
 			}
 		}
 		kb.SetKeys(keys[char])
 		err := kb.Launching()
 		check(err)
-		time.Sleep(8 * time.Millisecond)
+		time.Sleep(12 * time.Millisecond)
 		kb.Clear()
-
 	}
 }
 func reset(current []string) []string {
 
 	// 50 is arbitrary here and may need to increase
 	if verbose {
-		fmt.Println("keys reset.")
+		logrus.Println("Keys reset.")
 	}
 	temp := make([]string, 0, 50)
 	temp = append(temp, current[40:]...)
