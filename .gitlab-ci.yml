@@ -10,5 +10,10 @@ stages:
 
 build:
     script: 
-      - echo "hello golang"
+      - export GOPATH=~/go
+      - export PATH=$PATH:$GOPATH/bin
+      - mkdir ~/go
+      - git clone git@gitlab.com:jkwiatko/fox.git $GOPATH/fox
+      - cd $GOPATH/fox
+      - go install 
 
