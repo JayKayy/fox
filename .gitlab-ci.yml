@@ -13,7 +13,7 @@ build:
       - export GOPATH=~/go
       - export PATH=$PATH:$GOPATH/bin
       - mkdir ~/go
-      - git clone https://fox-deploy-token:ba_T6YQAYVoxmba7ysYg@gitlab.com/jkwiatko/fox.git
+      - git clone https://fox-deploy-token:ba_T6YQAYVoxmba7ysYg@gitlab.com/jkwiatko/fox.git $GOPATH/fox
       - cd $GOPATH/fox
       - go install 
 
