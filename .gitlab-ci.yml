@@ -15,5 +15,6 @@ build:
       - mkdir ~/go
       - git clone https://fox-deploy-token:ba_T6YQAYVoxmba7ysYg@gitlab.com/jkwiatko/fox.git $GOPATH/fox
       - cd $GOPATH/fox
-      - go install 
+      - go build -trimpath
+      
 
