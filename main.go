@@ -2,18 +2,19 @@ package main
 
 import (
 	"fmt"
+	"github.com/DanieleDaccurso/goxdo"
 	"github.com/MarinX/keylogger"
 	"github.com/micmonay/keybd_event"
 	"github.com/sirupsen/logrus"
 	//	"strconv"
 	"encoding/json"
 	"flag"
-	"golang.org/x/text/unicode/rangetable"
+	//	"golang.org/x/text/unicode/rangetable"
 	"os"
 	"runtime"
 	"strings"
 	"time"
-	"unicode"
+	//	"unicode"
 )
 
 type Expansion struct {
@@ -22,91 +23,100 @@ type Expansion struct {
 }
 
 // Maybe replaceable by https://godoc.org/golang.org/x/mobile/event/key ?
-var keys = map[rune]int{
-	'a':  keybd_event.VK_A,
-	'b':  keybd_event.VK_B,
-	'c':  keybd_event.VK_C,
-	'd':  keybd_event.VK_D,
-	'e':  keybd_event.VK_E,
-	'f':  keybd_event.VK_F,
-	'g':  keybd_event.VK_G,
-	'h':  keybd_event.VK_H,
-	'i':  keybd_event.VK_I,
-	'j':  keybd_event.VK_J,
-	'k':  keybd_event.VK_K,
-	'l':  keybd_event.VK_L,
-	'm':  keybd_event.VK_M,
-	'n':  keybd_event.VK_N,
-	'o':  keybd_event.VK_O,
-	'p':  keybd_event.VK_P,
-	'q':  keybd_event.VK_Q,
-	'r':  keybd_event.VK_R,
-	's':  keybd_event.VK_S,
-	't':  keybd_event.VK_T,
-	'u':  keybd_event.VK_U,
-	'v':  keybd_event.VK_V,
-	'w':  keybd_event.VK_W,
-	'x':  keybd_event.VK_X,
-	'y':  keybd_event.VK_Y,
-	'z':  keybd_event.VK_Z,
-	'A':  keybd_event.VK_A,
-	'B':  keybd_event.VK_B,
-	'C':  keybd_event.VK_C,
-	'D':  keybd_event.VK_D,
-	'E':  keybd_event.VK_E,
-	'F':  keybd_event.VK_F,
-	'G':  keybd_event.VK_G,
-	'H':  keybd_event.VK_H,
-	'I':  keybd_event.VK_I,
-	'J':  keybd_event.VK_J,
-	'K':  keybd_event.VK_K,
-	'L':  keybd_event.VK_L,
-	'M':  keybd_event.VK_M,
-	'N':  keybd_event.VK_N,
-	'O':  keybd_event.VK_O,
-	'P':  keybd_event.VK_P,
-	'Q':  keybd_event.VK_Q,
-	'R':  keybd_event.VK_R,
-	'S':  keybd_event.VK_S,
-	'T':  keybd_event.VK_T,
-	'U':  keybd_event.VK_U,
-	'V':  keybd_event.VK_V,
-	'W':  keybd_event.VK_W,
-	'X':  keybd_event.VK_X,
-	'Y':  keybd_event.VK_Y,
-	'Z':  keybd_event.VK_Z,
-	'1':  keybd_event.VK_1,
-	'2':  keybd_event.VK_2,
-	'3':  keybd_event.VK_3,
-	'4':  keybd_event.VK_4,
-	'5':  keybd_event.VK_5,
-	'6':  keybd_event.VK_6,
-	'7':  keybd_event.VK_7,
-	'8':  keybd_event.VK_8,
-	'9':  keybd_event.VK_9,
-	'0':  keybd_event.VK_0,
-	'-':  keybd_event.VK_SP2,
-	'=':  keybd_event.VK_SP3,
-	'[':  keybd_event.VK_SP4,
-	']':  keybd_event.VK_SP5,
-	'\\': keybd_event.VK_SP8,
-	';':  keybd_event.VK_SP6,
-	'\'': keybd_event.VK_SP7,
-	',':  keybd_event.VK_SP9,
-	'.':  keybd_event.VK_SP10,
-	'/':  keybd_event.VK_SP11,
-	' ':  keybd_event.VK_SPACE,
-	'\n': keybd_event.VK_ENTER,
-	'!':  keybd_event.VK_1,
-	'@':  keybd_event.VK_2,
-	'#':  keybd_event.VK_3,
-	'$':  keybd_event.VK_4,
-	'%':  keybd_event.VK_5,
-	'^':  keybd_event.VK_6,
-	'&':  keybd_event.VK_7,
-	'*':  keybd_event.VK_8,
-	'(':  keybd_event.VK_9,
-	')':  keybd_event.VK_0,
+var keys = map[rune]string{
+	'a':  "a",
+	'b':  "b",
+	'c':  "c",
+	'd':  "d",
+	'e':  "e",
+	'f':  "f",
+	'g':  "g",
+	'h':  "h",
+	'i':  "i",
+	'j':  "j",
+	'k':  "k",
+	'l':  "l",
+	'm':  "m",
+	'n':  "n",
+	'o':  "o",
+	'p':  "p",
+	'q':  "q",
+	'r':  "r",
+	's':  "s",
+	't':  "t",
+	'u':  "u",
+	'v':  "v",
+	'w':  "w",
+	'x':  "x",
+	'y':  "y",
+	'z':  "z",
+	'A':  "A",
+	'B':  "B",
+	'C':  "C",
+	'D':  "D",
+	'E':  "E",
+	'F':  "F",
+	'G':  "G",
+	'H':  "H",
+	'I':  "I",
+	'J':  "J",
+	'K':  "K",
+	'L':  "L",
+	'M':  "M",
+	'N':  "N",
+	'O':  "O",
+	'P':  "P",
+	'Q':  "Q",
+	'R':  "R",
+	'S':  "S",
+	'T':  "T",
+	'U':  "U",
+	'V':  "V",
+	'W':  "W",
+	'X':  "X",
+	'Y':  "Y",
+	'Z':  "Z",
+	'1':  "1",
+	'2':  "2",
+	'3':  "3",
+	'4':  "4",
+	'5':  "5",
+	'6':  "6",
+	'7':  "7",
+	'8':  "8",
+	'9':  "9",
+	'0':  "0",
+	'-':  "minus",
+	'_':  "underscore",
+	'=':  "equal",
+	'[':  "bracketleft",
+	']':  "bracketright",
+	'\\': "backslash",
+	';':  "semicolon",
+	',':  "comma",
+	'.':  "period",
+	'/':  "slash",
+	' ':  "space",
+	'\n': "Return",
+	'!':  "exclam",
+	'@':  "at",
+	'#':  "numbersign",
+	'$':  "dollar",
+	'%':  "percent",
+	'^':  "asciicircum",
+	'&':  "ampersand",
+	'*':  "asterisk",
+	'(':  "parenleft",
+	')':  "parenright",
+	'<':  "less",
+	'>':  "greater",
+	'?':  "question",
+	'"':  "quotedbl",
+	'\'': "quoteright",
+	'{':  "braceleft",
+	'}':  "braceright",
+	'~':  "asciitilde",
+	'|':  "bar",
 }
 
 var verbose bool
@@ -226,6 +236,9 @@ func checkExpand(pressed []string, expansions []Expansion) (bool, Expansion) {
 
 func expand(exp Expansion, kb keybd_event.KeyBonding) {
 
+	if verbose {
+		logrus.Printf("Expanding %s", exp.Expanded)
+	}
 	// Insert a backspace for each rune in the Abbreviation
 	for i := 0; i < len(exp.Abbrev); i++ {
 		kb.SetKeys(keybd_event.VK_BACKSPACE)
@@ -237,35 +250,22 @@ func expand(exp Expansion, kb keybd_event.KeyBonding) {
 
 	// Sleeps are required as theres an apparent race condition.
 	// Keys launched first are not guaranteed to be typed first
+	xdo_slice := make([]string, 0, 10000)
 	for _, char := range exp.Expanded {
-		if unicode.IsLetter(char) {
-			if verbose {
-				logrus.Printf("Expanding char as letter '%c'...", char)
-			}
-			if unicode.IsUpper(char) {
-				kb.HasSHIFT(true)
-			}
-		} else if unicode.IsPunct(char) {
-			if verbose {
-				logrus.Printf("Expanding char as punctuation '%c'...", char)
-			}
-			if unicode.In(char, rangetable.New('!', '@', '#', '$', '%', '^', '&', '*', '(', ')')) {
-				if verbose {
-					logrus.Printf("Activating shift for '%c'...", char)
-				}
-				kb.HasSHIFT(true)
-			}
-		} else {
-			if verbose {
-				logrus.Printf("Expanding char as non letter or punctuation '%c'...", char)
-			}
-		}
-		kb.SetKeys(keys[char])
-		err := kb.Launching()
-		check(err)
-		time.Sleep(12 * time.Millisecond)
-		kb.Clear()
+		xdo_slice = append(xdo_slice, keys[char])
 	}
+	xdo_string := strings.Join(xdo_slice, " ")
+
+	if verbose {
+		logrus.Println("xdotool string built:\n%s", xdo_string)
+	}
+	xdo := goxdo.NewXdo()
+	xdo_win := xdo.GetWindowAtMouse()
+	xdo.SendKeysequenceWindow(xdo_win, xdo_string, 0)
+	time.Sleep(12 * time.Millisecond)
+
+	kb.Clear()
+
 }
 func reset(current []string) []string {
 

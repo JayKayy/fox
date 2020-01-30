@@ -1,3 +1,5 @@
+github.com/DanieleDaccurso/goxdo v0.0.0-20170429062742-e6566d72e09a h1:VHjQYSUy4FC2W/L4BdiOaiu4iBARzHGBpHAaqADG08E=
+github.com/DanieleDaccurso/goxdo v0.0.0-20170429062742-e6566d72e09a/go.mod h1:O/i1WPJnAG9EMcsPOa9LHJeWsYcGP5Q2v4FZK1qMFYw=
 github.com/MarinX/keylogger v0.0.0-20190214225502-bf368a5eb23f h1:SHNF2qui5ZUIrdDVxCzY9EEiMoQSNGjAytb0NpumZRs=
 github.com/MarinX/keylogger v0.0.0-20190214225502-bf368a5eb23f/go.mod h1:7E8WmBHb+Cc2xhvPzcfiXiAuIBN0lkQJrwEBMFMykfM=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
