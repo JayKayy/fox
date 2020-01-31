@@ -243,7 +243,7 @@ func expand(exp Expansion, kb keybd_event.KeyBonding) {
 	for i := 0; i < len(exp.Abbrev); i++ {
 		kb.SetKeys(keybd_event.VK_BACKSPACE)
 		err := kb.Launching()
-		time.Sleep(14 * time.Millisecond)
+		time.Sleep(8 * time.Millisecond)
 		check(err)
 	}
 	kb.Clear()
@@ -257,11 +257,10 @@ func expand(exp Expansion, kb keybd_event.KeyBonding) {
 	xdo_string := strings.Join(xdo_slice, " ")
 
 	if verbose {
-		logrus.Println("xdotool string built:\n%s", xdo_string)
+		logrus.Printf("xdotool string built:\n%s", xdo_string)
 	}
 	xdo := goxdo.NewXdo()
-	xdo_win := xdo.GetWindowAtMouse()
-	xdo.SendKeysequenceWindow(xdo_win, xdo_string, 0)
+	xdo.EnterTextWindow(xdo.GetWindowAtMouse(), exp.Expanded, 5)
 	time.Sleep(12 * time.Millisecond)
 
 	kb.Clear()
