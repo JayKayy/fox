@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"flag"
 	"golang.org/x/text/unicode/rangetable"
+	"math/rand"
 	"os"
 	"runtime"
 	"strings"
@@ -110,6 +111,7 @@ var keys = map[rune]int{
 }
 
 var verbose bool
+var delay int32 = 20
 
 func main() {
 
@@ -230,7 +232,7 @@ func expand(exp Expansion, kb keybd_event.KeyBonding) {
 	for i := 0; i < len(exp.Abbrev); i++ {
 		kb.SetKeys(keybd_event.VK_BACKSPACE)
 		err := kb.Launching()
-		time.Sleep(14 * time.Millisecond)
+		time.Sleep(time.Duration(rand.Int31n(delay)) * time.Millisecond)
 		check(err)
 	}
 	kb.Clear()
@@ -263,7 +265,7 @@ func expand(exp Expansion, kb keybd_event.KeyBonding) {
 		kb.SetKeys(keys[char])
 		err := kb.Launching()
 		check(err)
-		time.Sleep(12 * time.Millisecond)
+		time.Sleep(time.Duration(rand.Int31n(delay)) * time.Millisecond)
 		kb.Clear()
 	}
 }
