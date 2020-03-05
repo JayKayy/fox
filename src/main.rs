@@ -45,7 +45,7 @@ fn main() -> std::io::Result<()> {
 
     // Specify event to listen to, bind multiple?
     let default_device = "";
-    let default_config = "~/.config/macros";
+    let default_config = "$HOME/.config/macros";
 
     let config_path = matches.value_of("config").unwrap_or(default_config);
     let device_path = matches.value_of("device").unwrap_or(default_device);

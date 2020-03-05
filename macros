@@ -1,15 +1,18 @@
- [
+{
 
- 	{
- 		"abbrev": ";;,",
- 		"expanded": "Hi there!"
- 	},
- 	{
- 		"abbrev": "hw",
- 		"expanded": "Hello\nWorld!\n"
- 	},
- 	{
- 		"abbrev": "rsrs",
- 		"expanded": "rust"
- 	}
- ]
+	"expansions": [
+
+		{
+			"abbrev": "hello",
+			"expanded": "hello-world!"
+		},
+		{
+			"abbrev": ";;.",
+			"expanded": "Hi there!\n\nNew lines "
+		},
+		{
+			"abbrev": "rsrs",
+			"expanded": "Rust!"
+		}
+	]
+}
