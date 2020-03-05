@@ -2,38 +2,44 @@
 
 ### Overview
 
-`fox` is a lightweight CLI text expander for linux meant to help reduce 
-repetitive typing. It can be used for anything from templating to email 
-greetings and signatures.
+`fox` is a lightweight CLI text expander written in Rust for linux meant
+to help reduce repetitive typing. It can be used for anything from
+templating to email greetings and signatures.
 
 ### Usage
 
 ```
-Usage of ./fox:
-  -c string
-    	Config file to use for macros. (default "$HOME/.macros")
-  -d string
-    	Input device to listen to. For input devices use: ls -al /dev/input/by-id
-  -v	Enable verbose mode.
+Fox - Text Expander 0.1.0
+Expands text abbreviations
+
+USAGE:
+    fox [OPTIONS]
+
+FLAGS:
+    -h, --help       Prints help information
+    -V, --version    Prints version information
+
+OPTIONS:
+    -c, --config <config>    json file containing list of macros
+    -d, --device <device>    Path to device file. Normally in /dev/input
 ```
 
 Since fox reads keyboard presses, it requires escalated privileges to run or
-opening up privileges on `/dev/uinput`.
+opening up privileges on `/dev/input`.
 
 ### Macros
 
 A sample macro file (macros) can be found in this repo. It is a json formatted 
 text file that contains a list of the abbreviations and what they should
-expand to. You can add up to 255 macros to the list. The default macro file 
-used will be $HOME/.macros. Otherwise you can specify the path to your macro 
-file with the `-c` flag. 
+expand to once typed. The default macro file 
+used will be `$HOME/.config/macros`. Otherwise you can specify the path to your
+macro file with the `-c` flag. 
 
 ### Devices
 
-Only one device (keyboard) can be used at a time. A default device will be 
-chosen if one is not specified. To list all your devices, you can use the 
-command `ls -al /dev/input/by-id`. Then providing that path to the `-d` flag
-will set `fox` to listen for keystrokes on that specific device.
+Only one device (keyboard) can be used at a time. To list all your devices,
+you can use the command `ls -al /dev/input/by-id`. Then providing that path
+to the `-d` flag will set fox to listen to the provided device for keystrokes.
 
 ### Examples
 
@@ -55,9 +61,9 @@ Use USB keyboard and `/home/userA/.macros`
 sudo ./fox -c /home/userA/.macros -d /dev/input/event17
 ```
 
-Use default keyboard and `/home/userA/.macros` and print verbose output.
+Use default keyboard and `/home/userA/.macros`.
 
 ```bash
-sudo ./fox -c /home/userA/.macros -d /dev/input/event17 -v 
+sudo ./fox -c /home/userA/.macros -d /dev/input/event17
 ```
 
