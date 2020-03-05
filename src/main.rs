@@ -40,6 +40,7 @@ fn main() -> std::io::Result<()> {
             .short("d")
             .long("device")
             .takes_value(true)
+            .required(true)
             .help("Path to device file. Normally in /dev/input"))
         .get_matches();
 
