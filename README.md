@@ -67,3 +67,4 @@ Use default keyboard and `/home/userA/.macros`.
 sudo ./fox -c /home/userA/.macros -d /dev/input/event17
 ```
 
+_This repository is built off the keylogger functionality of https://github.com/gsingh93/keylogger._
