@@ -2,6 +2,7 @@ extern crate serde_json;
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
+extern crate clap;
 
 mod input;
 use input::{is_key_event, is_key_press, is_key_release, is_shift, get_key_text, InputEvent};
@@ -11,6 +12,7 @@ use std::fs::File;
 use std::io::Read;
 use std::mem;
 use enigo::*;
+use clap::{Arg, App};
 
 #[derive(Serialize, Deserialize, Debug)]
 struct Expansion {
@@ -26,13 +28,30 @@ struct ExpansionSet {
 
 fn main() -> std::io::Result<()> {
 
-    // Specify event to listen to, bind multiple?
-    let default_device = "/dev/input/event3";
-    let default_config = "/home/jkwiatko/.config/macros";
-    //TODO flags for specifying config file and device
+    let matches = App::new("Fox - Text Expander")
+        .version("0.1.0")
+        .author("jkwiatkoski@protonmail.com")
+        .about("Expands text abbreviations")
+        .arg(Arg::with_name("config")
+            .short("c")
+            .long("config")
+            .takes_value(true)
+            .help("json file containing list of macros"))
+        .arg(Arg::with_name("device")
+            .short("d")
+            .long("device")
+            .takes_value(true)
+            .help("Path to device file. Normally in /dev/input"))
+        .get_matches();
 
-    let mut device = setup_device(default_device);
-    let expset = load_expansions(default_config);
+    // Specify event to listen to, bind multiple?
+    let default_device = "";
+    let default_config = "~/.config/macros";
+
+    let config_path = matches.value_of("config").unwrap_or(default_config);
+    let device_path = matches.value_of("device").unwrap_or(default_device);
+    let mut device = setup_device(device_path);
+    let expset = load_expansions(config_path);
 
     println!("Initialization Complete!");
 
@@ -67,11 +86,11 @@ fn main() -> std::io::Result<()> {
     }
 }
 
-fn setup_device(default_device: &str) -> std::fs::File {
+fn setup_device(device: &str) -> std::fs::File {
     // Setup Device to listen to
-    let file = File::open(default_device);
+    let file = File::open(device);
     if file.is_err(){
-        panic!("Error opening default device!");
+        panic!("Error opening device: {}!", device);
     }
     return file.unwrap();
 }
@@ -91,14 +110,27 @@ fn load_expansions(default_config: &str) -> ExpansionSet {
 
 
 // Simulate keypresses
-// TODO replace '\n' eith new line in key_sequence_parse
 fn expand(exp: &Expansion) -> bool {
     let mut enigo = Enigo::new();
     for _i in 0..exp.abbrev.len() {
         enigo.key_down(Key::Backspace);
         enigo.key_up(Key::Backspace);
     }
-    enigo.key_sequence(&(exp.expanded));
+    // DSL seems broken need to split on '\n' and print each line
+    if exp.expanded.contains("\n") {
+        let mut i = 0;
+        for line in exp.expanded.split("\n") {
+            enigo.key_sequence(&(line));
+            // Don't add a new line at the end of the last line.
+            if i < exp.expanded.split("\n").collect::<Vec<&str>>().len()-1 {
+                enigo.key_down(Key::Return);
+                enigo.key_up(Key::Return);
+            }
+            i = i+1;
+        }
+    }else {
+        enigo.key_sequence(&exp.expanded);
+    }
     return true
 }
 
