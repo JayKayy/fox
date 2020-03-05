@@ -30,7 +30,6 @@ fn main() -> std::io::Result<()> {
 
     let matches = App::new("Fox - Text Expander")
         .version("0.1.0")
-        .author("jkwiatkoski@protonmail.com")
         .about("Expands text abbreviations")
         .arg(Arg::with_name("config")
             .short("c")
