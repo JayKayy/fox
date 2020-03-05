@@ -35,7 +35,6 @@ fn main() -> std::io::Result<()> {
     let expset = load_expansions(default_config);
 
     println!("Initialization Complete!");
-    println!("Expansions: {}", expset.expansions[0].expanded);
 
     // Loop through keyboard events
     let mut buffer = [0;24];
@@ -92,7 +91,7 @@ fn load_expansions(default_config: &str) -> ExpansionSet {
 
 
 // Simulate keypresses
-
+// TODO replace '\n' eith new line in key_sequence_parse
 fn expand(exp: &Expansion) -> bool {
     let mut enigo = Enigo::new();
     for _i in 0..exp.abbrev.len() {
