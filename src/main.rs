@@ -10,16 +10,15 @@ use input::{is_key_event, is_key_press, is_key_release, is_shift, get_key_text, 
 use std::fs::File;
 use std::io::Read;
 use std::mem;
+use enigo::*;
 
-//use enigo::*;
-
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 struct Expansion {
     abbrev: String,
     expanded: String
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 struct ExpansionSet {
     expansions: Vec<Expansion>
 }
@@ -33,13 +32,14 @@ fn main() -> std::io::Result<()> {
     //TODO flags for specifying config file and device
 
     let mut device = setup_device(default_device);
-    let exp = load_expansions(default_config);
+    let expset = load_expansions(default_config);
 
     println!("Initialization Complete!");
-    println!("Expansions: {}", exp.expansions[0].expanded);
+    println!("Expansions: {}", expset.expansions[0].expanded);
 
     // Loop through keyboard events
     let mut buffer = [0;24];
+    let mut pressed = Vec::new();
     let mut shift_pressed = 0;
     loop {
         let num_bytes = device.read(&mut buffer).unwrap_or_else(|e| panic!("{}", e));
@@ -53,12 +53,12 @@ fn main() -> std::io::Result<()> {
                     shift_pressed += 1;
                 }
 
-                let text = get_key_text(event.code, shift_pressed).as_bytes();
-                //let num_bytes = log_file.write(text).unwrap_or_else(|e| panic!("{}", e));
-
-                if num_bytes != text.len() {
-                    panic!("Error while writing to log file");
+                let text = get_key_text(event.code, shift_pressed);
+                pressed.push(text);
+                if check_expand(&expset, &pressed) {
+                    pressed.clear();
                 }
+
             } else if is_key_release(event.value) {
                 if is_shift(event.code) {
                     shift_pressed -= 1;
@@ -91,4 +91,25 @@ fn load_expansions(default_config: &str) -> ExpansionSet {
 }
 
 
-    //let mut enigo = Enigo::new();
+// Simulate keypresses
+
+fn expand(exp: &Expansion) -> bool {
+    let mut enigo = Enigo::new();
+    for _i in 0..exp.abbrev.len() {
+        enigo.key_down(Key::Backspace);
+        enigo.key_up(Key::Backspace);
+    }
+    enigo.key_sequence(&(exp.expanded));
+    return true
+}
+
+// Check for abbreviation matches
+fn check_expand(set: &ExpansionSet, pressed: &Vec<&str>) -> bool {
+    let string = pressed.join("");
+    for exp in set.expansions.iter() {
+        if string.contains(&exp.abbrev){
+            return expand(&exp)
+        }
+    }
+    return false
+}

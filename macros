@@ -1,17 +1,15 @@
-{
-	"expansions": [
+ [
 
-		{
-			"abbrev": ";;,",
-			"expanded": "Hi there!"
-		},
-		{
-			"abbrev": "hw",
-			"expanded": "Hello\nWorld!\n"
-		},
-		{
-			"abbrev": "gogo",
-			"expanded": "golang"
-		}
-	]
-}
+ 	{
+ 		"abbrev": ";;,",
+ 		"expanded": "Hi there!"
+ 	},
+ 	{
+ 		"abbrev": "hw",
+ 		"expanded": "Hello\nWorld!\n"
+ 	},
+ 	{
+ 		"abbrev": "rsrs",
+ 		"expanded": "rust"
+ 	}
+ ]
