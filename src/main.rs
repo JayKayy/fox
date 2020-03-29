@@ -113,8 +113,7 @@ fn load_expansions(default_config: &str) -> ExpansionSet {
 fn expand(exp: &Expansion) -> bool {
     let mut enigo = Enigo::new();
     for _i in 0..exp.abbrev.len() {
-        enigo.key_down(Key::Backspace);
-        enigo.key_up(Key::Backspace);
+        enigo.key_click(Key::Backspace);
     }
     // DSL seems broken need to split on '\n' and print each line
     if exp.expanded.contains("\n") {
