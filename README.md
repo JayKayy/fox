@@ -1,5 +1,7 @@
 # Fox - Text Expander
 
+This repository is deprecated and has moved to:
+https://github.com/JayKayy/fox/
 ### Overview
 
 `fox` is a lightweight CLI text expander written in Rust for linux meant
