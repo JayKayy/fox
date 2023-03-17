@@ -1,21 +1,26 @@
 package main
 
 import (
+	"encoding/json"
+	"flag"
 	"fmt"
 	"github.com/MarinX/keylogger"
 	"github.com/micmonay/keybd_event"
 	"github.com/sirupsen/logrus"
-	//	"strconv"
-	"encoding/json"
-	"flag"
 	"golang.org/x/text/unicode/rangetable"
-	"math/rand"
 	"os"
 	"runtime"
 	"strings"
 	"time"
 	"unicode"
 )
+
+// 3/16/2023
+// This program can work but at this point relies too heavily on the keylogger's single key press process.
+// I am unable to get it to reliably enter characters without introducing significant delays in
+// outputting the results. Things to revisit:
+// String implementation currently we output 1 char at a time for a reason I can't remamber.
+// If we could say simply send "hello" to the keyboard that would likely be better.
 
 type Expansion struct {
 	Abbrev   string
@@ -111,7 +116,7 @@ var keys = map[rune]int{
 }
 
 var verbose bool
-var delay int32 = 20
+var delay = 40
 
 func main() {
 
@@ -124,14 +129,16 @@ func main() {
 	flag.Parse()
 
 	if verbose {
-		logrus.Println("Initializing...")
-		logrus.Println("Using config file: ", config)
+		logrus.SetLevel(logrus.DebugLevel)
 	}
+	logrus.Info("Initializing...")
+	logrus.Debug("Using config file: ", config)
 
 	// TODO multi-keyboard
 	kb, err := keybd_event.NewKeyBonding()
-	check(err)
-
+	if err != nil {
+		logrus.Fatal("Setting up new KeyBonding", err)
+	}
 	// For linux, it is very important wait 2 seconds
 	if runtime.GOOS == "linux" {
 		time.Sleep(2 * time.Second)
@@ -140,89 +147,85 @@ func main() {
 	if device == "" {
 		device = keylogger.FindKeyboardDevice()
 		if len(device) < 1 {
-			logrus.Error("No keyboard found...you will need to provide manual input path")
+			logrus.Error("No keyboard found...you will need to provide manual input path. Ex: fox -d /dev/input/event[NUM]")
 			return
 		}
 	}
 
-	if verbose {
-		logrus.Println("Using keyboard at", device)
-	}
+	logrus.Debug("Using keyboard at", device)
 
 	// init keylogger with keyboard
 	k, err := keylogger.New(device)
-	check(err)
+	if err != nil {
+		logrus.Fatal("initializing keylogger on device", err)
+	}
 	defer k.Close()
 
 	events := k.Read()
 
 	// arbitrarily set limit to 255
-	var expansions []Expansion = make([]Expansion, 0, 255)
+	var expansions = make([]Expansion, 0, 255)
 	file, err := os.OpenFile(config, os.O_CREATE, 0666)
-	check(err)
+	if err != nil {
+		logrus.Fatal("opening config file", err)
+	}
 	defer file.Close()
 
-	if verbose {
-		logrus.Println("Reading in config file ...")
-	}
-	var bytes []byte = make([]byte, 1000, 5000)
-	read, err := file.Read(bytes)
-	check(err)
-	err = json.Unmarshal(bytes[:read], &expansions)
-	check(err)
+	logrus.Debug("Reading in config file ...")
 
-	if verbose {
-		logrus.Println("Loaded macros: ", expansions)
+	var bytes = make([]byte, 1000, 5000)
+	read, err := file.Read(bytes)
+	if err != nil {
+		logrus.Fatalf("reading from config file %s: %v", config, err)
 	}
+
+	err = json.Unmarshal(bytes[:read], &expansions)
+	if err != nil {
+		logrus.Fatal(err)
+	}
+
+	logrus.Debug("Loaded macros: ", expansions)
+
 	var pressed = make([]string, 0, 50)
 
-	logrus.Println("fox expander ready!")
+	logrus.Info("fox expander ready!")
 	for e := range events {
-
 		switch e.Type {
 		// EvKey is used to describe state changes of keyboards, buttons, or other key-like devices.
 		// check the input_event.go for more events
 		case keylogger.EvKey:
-
 			// if the state of key is pressed
 			if e.KeyPress() {
 				if len(pressed) == cap(pressed) {
 					pressed = reset(pressed)
 				}
 				pressed = append(pressed, e.KeyString())
+				logrus.Debug("[event] press key ", e.KeyString())
 				match, exp := checkExpand(pressed, expansions)
 				if match {
 					expand(exp, kb)
 					pressed = make([]string, 0, 50)
 				}
-				if verbose {
-					logrus.Println("[event] press key ", e.KeyString())
-					logrus.Println("Key Sequence ", pressed)
-				}
-
+				//	logrus.Debug("Key Sequence ", pressed)
 			}
 			break
 		}
 	}
 }
 func checkExpand(pressed []string, expansions []Expansion) (bool, Expansion) {
-	// All abbreviations are checked case insensitive
+	// All abbreviations are checked case-insensitive
 	joined := strings.Join(pressed, "")
 	// If we get a lot of these I will break out into seperate function
 	joined = strings.ToLower(strings.Replace(joined, "SPACE", " ", -1))
 
-	if verbose {
-		logrus.Printf("Checking for matches in: '%s'", joined)
-	}
+	logrus.Debugf("Checking for matches in: '%s'", joined)
+
 	for _, exp := range expansions {
 		if strings.Contains(joined, strings.ToLower(exp.Abbrev)) {
-			if verbose {
-				logrus.Printf("Match found: '%s'!\n Expanding...\n", exp.Abbrev)
-			}
+			logrus.Debugf("Match found: '%s'!", exp.Abbrev)
 			return true, exp
 		}
 	}
-	// Not sure how to best handle the return of this function
 	return false, Expansion{"", ""}
 }
 
@@ -230,57 +233,48 @@ func expand(exp Expansion, kb keybd_event.KeyBonding) {
 
 	// Insert a backspace for each rune in the Abbreviation
 	for i := 0; i < len(exp.Abbrev); i++ {
+		logrus.Debug("Backspace pressed")
 		kb.SetKeys(keybd_event.VK_BACKSPACE)
 		err := kb.Launching()
-		time.Sleep(time.Duration(rand.Int31n(delay)) * time.Millisecond)
-		check(err)
+		time.Sleep(time.Millisecond * time.Duration(delay))
+		if err != nil {
+			logrus.Fatal("expanding expression", err)
+		}
 	}
 	kb.Clear()
 
-	// Sleeps are required as theres an apparent race condition.
+	// Sleeps are required as there's a race condition.
 	// Keys launched first are not guaranteed to be typed first
 	for _, char := range exp.Expanded {
 		if unicode.IsLetter(char) {
-			if verbose {
-				logrus.Printf("Expanding char as letter '%c'...", char)
-			}
+			logrus.Debugf("Expanding char as letter '%c'", char)
 			if unicode.IsUpper(char) {
 				kb.HasSHIFT(true)
 			}
 		} else if unicode.IsPunct(char) {
-			if verbose {
-				logrus.Printf("Expanding char as punctuation '%c'...", char)
-			}
+			logrus.Debugf("Expanding char as punctuation '%c'", char)
 			if unicode.In(char, rangetable.New('!', '@', '#', '$', '%', '^', '&', '*', '(', ')')) {
-				if verbose {
-					logrus.Printf("Activating shift for '%c'...", char)
-				}
+				logrus.Debugf("Activating shift for '%c'...", char)
 				kb.HasSHIFT(true)
 			}
 		} else {
-			if verbose {
-				logrus.Printf("Expanding char as non letter or punctuation '%c'...", char)
-			}
+			logrus.Debugf("Expanding char as non letter or punctuation '%c'", char)
 		}
 		kb.SetKeys(keys[char])
 		err := kb.Launching()
-		check(err)
-		time.Sleep(time.Duration(rand.Int31n(delay)) * time.Millisecond)
+		time.Sleep(time.Millisecond * time.Duration(delay))
+		if err != nil {
+			logrus.Fatal("launching macro", err)
+		}
 		kb.Clear()
 	}
 }
 func reset(current []string) []string {
 
 	// 50 is arbitrary here and may need to increase
-	if verbose {
-		logrus.Println("Keys reset.")
-	}
+	logrus.Debug("Keys reset.")
+
 	temp := make([]string, 0, 50)
 	temp = append(temp, current[40:]...)
 	return temp
-}
-func check(e error) {
-	if e != nil {
-		logrus.Fatal(e)
-	}
 }
