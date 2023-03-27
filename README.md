@@ -2,7 +2,7 @@
 
 ### Overview
 
-`fox` is a lightweight CLI text expander written in Rust for linux meant
+`fox` is a lightweight CLI text expander for linux meant
 to help reduce repetitive typing. It can be used for anything from
 templating to email greetings and signatures.
 
